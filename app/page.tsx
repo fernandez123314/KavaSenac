@@ -18,6 +18,20 @@ const sections: MenuSection[] = [
   { name: 'Matchas', note: 'Matcha de origen japonés', items: [['Matcha latte caliente',22,'Matcha y leche texturizada.'],['Ice latte matcha',25,'Matcha, leche texturizada y cubos de hielo.'],['Matcha fresh soda',25,'Matcha, sirope de jamaica, sirope de menta, cubos de hielo y agua con gas.'],['Ice berry matcha',28,'Matcha, salsa de frutos rojos, leche texturizada y cubos de hielo.'],['Ice passion matcha',28,'Matcha, salsa de maracuyá, leche texturizada y cubos de hielo.'],['Ice cream matcha',29,'Matcha, leche texturizada, cubos de hielo y una bocha de helado (sabor a elección).'],['Frappé de matcha',29,'Frappé a base matcha, leche, decorado con crema de leche.']].map(([name,price,description])=>({name,price,description}) as MenuItem) },
   { name: 'Cafés fríos', items: [['Káva chapaca',29,'Reducción de vino tinto, salsa de frutos rojos, leche texturizada, un shot de espresso y cubos de hielo.'],['Ice cream káva',29,'Ice latte más una bocha de helado sabor a elección con un toque de crema de leche y salsa toffy.'],['Ice berry latte',26,'Base salsa de frutos rojos, leche texturizada, un shot de espresso y cubos de hielo.'],['Frapuchino',24,'Frappé a base de leche, espresso y decorado con crema de leche.'],['Ice bombom',24,'Base leche condensada, leche texturizada, un shot de espresso y cubos de hielo.'],['Ice caramel',24,'Base salsa de caramelo de la casa, un shot de espresso, leche texturizada y cubos de hielo.'],['Orange coffee',24,'Zumo naranja, un shot de espresso y cubos de hielo.'],['Coffee lemon',24,'Base miel de abeja natural, zumo de limón, un shot de espresso, cubos de hielo y agua con gas.'],['Coffee tonic',20,'Un shot de espresso, agua tónica y cubos de hielo.'],['Cold brew',20,'Cold brew y cubos de hielo.'],['Ice latte',20,'Un shot de espresso, leche texturizada y cubos de hielo (sin azúcar).'],['Aerocano káva',19,'Espresso texturizado en frío con un toque dulce al estilo de káva.'],['Americano',16,'Un shot de espresso, agua y cubos de hielo (sin azúcar).'],['Extra shot de espresso',8]].map(([name,price,description])=>({name,price,description}) as MenuItem) },
   { name: 'Milkshakes', items: [['Pistachuela',26,'Batido de helado de pistacho decorado con crema de leche y salsa toffy.'],['Explosion oreo',26,'Batido de helado de oreo decorado con crema de leche y salsa toffy.'],['Toffy',26,'Batido de helado de dulce de leche coronado con crema de leche y salsa toffy.'],['Affogato clásico',25,'Una bocha de helado artesanal sabor vainilla y doble shot de espresso.'],['Affogato de pistacho',25,'Una bocha de helado artesanal de pistacho y doble shot de espresso.'],['Affogato a tu gusto',25,'Fusiona tu affogato, creando un sabor único, elige un sabor de helado acompañado de un doble shot de espresso.']].map(([name,price,description])=>({name,price,description}) as MenuItem) },
+ 
+{
+  name: 'Helados de la Casa',
+  items: [
+    ['Simple', 9, 'Una bocha de helado.'],
+    ['Doble', 16, 'Dos bochas de helado.'],
+    ['Triple', 25, 'Tres bochas de helado.'],
+    ['1/4 kilo', 35, '250g de helado artesanal.'],
+    ['1/2 kilo', 55, '500g de helado artesanal.'],
+    ['1 kilo', 95, '1000g de helado artesanal.'],
+  ].map(([name, price, description]) => ({ name, price, description }) as MenuItem),
+},
+
+
   { name: 'Frappés', items: [{name:'Frutos rojos, maracuyá',price:22,description:'Frappé a base de fruta natural. También puedes pedirlo sin azúcar.'}] },
   { name: 'Sodas artesanales', items: [['Ginger bloom',18,'Jengibre, piña, hierba buena y un toque de limón.'],['Orange honey',18,'Miel natural, naranja y romero.'],['Honey lemon',18,'Limón, miel y cedrón.'],['Berry jamaica',18,'Jamaica y frutos rojos.'],['Pasion cold brew',18,'Maracuyá, piña y cold brew.'],['Lemon cold brew',18,'Hierba buena, limón y cold brew.'],['Frutilla limón',18,'Frutilla, cedrón y limón.'],['Menta pasión',18,'Maracuyá y menta.']].map(([name,price,description])=>({name,price,description}) as MenuItem) },
   { name: 'Jugos', items: [['Jugos de frutas (agua) 400ml',14,'Frutilla, maracuyá, limón, papaya, piña.'],['Licuados con leche 400ml',17,'Banana, frutilla, papaya, limón, maracuyá.'],['Agua sin gas',7],['Agua con gas',10],['Agua con gas y zumo de limón',13]].map(([name,price,description])=>({name,price,description}) as MenuItem) },
@@ -31,7 +45,7 @@ const sections: MenuSection[] = [
 
 const allItems = sections.flatMap(section => section.items.map(item => ({...item, section: section.name})))
 
-function BrandMark() { return <div className="brand"><div className="brand-mark"><Leaf size={25} strokeWidth={1.2}/></div><div><div className="brand-name">KÁVA</div><div className="brand-sub">ECO COFFEE</div><div className="brand-branch">Sucursal Temático</div></div></div> }
+function BrandMark() { return <div className="brand"><div className="brand-mark"><Leaf size={25} strokeWidth={1.2}/></div><div><div className="brand-name">KÁVA</div><div className="brand-sub">ECO COFFEE</div><div className="brand-branch">Matriz - Senac </div></div></div> }
 function Botanical() { return <div className="botanical" aria-hidden="true"><Leaf className="leaf leaf-a"/><Leaf className="leaf leaf-b"/><Leaf className="leaf leaf-c"/><Leaf className="leaf leaf-d"/></div> }
 
 export default function Page() {
@@ -72,7 +86,7 @@ export default function Page() {
     setPassportPreview(true)
     window.setTimeout(() => {
       const message = `Hola Káva, quiero reservar mi Pasaporte Coffee Week\n\nNombre: ${name}\nTeléfono: ${phone}\n\nQuiero reservar mi Pasaporte Coffee Week`
-      const whatsappUrl = `https://wa.me/59178100028?text=${encodeURIComponent(message)}`
+      const whatsappUrl = `https://wa.me/59164593960?text=${encodeURIComponent(message)}`
       const whatsappLink = document.createElement('a')
       whatsappLink.href = whatsappUrl
       whatsappLink.target = '_blank'
@@ -85,7 +99,7 @@ export default function Page() {
   }
   const orderText = `Hola Káva, quiero pedir:\n${cartItems.map(item => `${cart[item.name]}x ${item.name} - Bs ${item.price * (cart[item.name] || 0)}`).join('\n')}\nTotal: Bs ${total}${comment ? `\nComentarios: ${comment}` : ''}`
   const submitOrder = () => {
-    window.open(`https://wa.me/59178100028?text=${encodeURIComponent(orderText)}`, '_blank', 'noopener,noreferrer')
+    window.open(`https://wa.me/59164593960?text=${encodeURIComponent(orderText)}`, '_blank', 'noopener,noreferrer')
     clearCart()
     setCartOpen(false)
     openMenu()
@@ -97,10 +111,10 @@ export default function Page() {
     {toast && <div className="cart-toast" role="status" aria-live="polite"><span className="toast-check">✓</span> Producto agregado al carrito</div>}
     {menuOpen && <div className="mobile-nav"><button onClick={openMenu}>Menú</button><button onClick={() => {setMenuOpen(false);document.getElementById('passport')?.scrollIntoView({behavior:'smooth'})}}>Pasaporte</button><button onClick={() => {setMenuOpen(false);document.getElementById('location')?.scrollIntoView({behavior:'smooth'})}}>Ubicación</button></div>}
 
-    {screen === 'welcome' ? <section className="welcome page-shell"><Botanical/><div className="welcome-copy"><p className="eyebrow">Café de especialidad · sostenible y consciente</p><h1>Bienvenido<br/>a <em>Káva</em></h1><p className="hero-text">Una pausa bien hecha. Café honesto, ingredientes vivos y un espacio para volver a ti.</p><div className="welcome-actions"><button className="button-primary" onClick={openMenu}>Ver menú <ArrowRight size={15}/></button><button className="button-secondary" onClick={() => { document.getElementById('passport')?.scrollIntoView({behavior:'smooth'}); openPassport() }}>Reservar pasaporte <ArrowRight size={15}/></button><button className="button-secondary" onClick={() => document.getElementById('location')?.scrollIntoView({behavior:'smooth'})}>Ver ubicación <MapPin size={15}/></button></div><a className="whatsapp-link" href="https://wa.me/59178100028" target="_blank" rel="noreferrer">◉ Escríbenos por WhatsApp</a></div><div className="hero-note"><Leaf size={15}/> 100% sostenible</div></section> : <section id="menu" className="menu-section page-shell"><button className="back-link" onClick={() => setScreen('welcome')}><ArrowLeft size={15}/> Volver a bienvenida</button><div className="section-heading"><div><p className="eyebrow">La carta completa</p><h2>Hecho para disfrutar<br/><em>sin prisa.</em></h2></div><button className="cart-trigger" onClick={openCart}><ShoppingBag size={17}/> Tu carrito {cartCount > 0 && <b>{cartCount}</b>}</button></div><div className="category-row">{categories.map(category => <button key={category} className={active === category ? 'category-active' : ''} onClick={() => setActive(category)}>{category}</button>)}</div><div className="menu-sections">{visibleSections.map(section => <section className="menu-category" key={section.name}><div className="category-heading"><div><p className="eyebrow">Káva selección</p><h3>{section.name}</h3></div>{section.note && <p>{section.note}</p>}</div><div className="menu-grid">{section.items.map(item => <article className="menu-card" key={`${section.name}-${item.name}`}><div className="card-top"><span className="item-icon"><Leaf size={16}/></span><span className="price">Bs {item.price}</span></div><h4>{item.name}</h4>{item.description && <p>{item.description}</p>}<button className="add-button" aria-label={`Agregar ${item.name}`} onClick={() => add(item.name)}><Plus size={16}/></button></article>)}</div></section>)}</div></section>}
+    {screen === 'welcome' ? <section className="welcome page-shell"><Botanical/><div className="welcome-copy"><p className="eyebrow">Café de especialidad · sostenible y consciente</p><h1>Bienvenido<br/>a <em>Káva</em></h1><p className="hero-text">Una pausa bien hecha. Café honesto, ingredientes vivos y un espacio para volver a ti.</p><div className="welcome-actions"><button className="button-primary" onClick={openMenu}>Ver menú <ArrowRight size={15}/></button><button className="button-secondary" onClick={() => { document.getElementById('passport')?.scrollIntoView({behavior:'smooth'}); openPassport() }}>Reservar pasaporte <ArrowRight size={15}/></button><button className="button-secondary" onClick={() => document.getElementById('location')?.scrollIntoView({behavior:'smooth'})}>Ver ubicación <MapPin size={15}/></button></div><a className="whatsapp-link" href="https://wa.me/59164593960" target="_blank" rel="noreferrer">◉ Escríbenos por WhatsApp</a></div><div className="hero-note"><Leaf size={15}/> 100% sostenible</div></section> : <section id="menu" className="menu-section page-shell"><button className="back-link" onClick={() => setScreen('welcome')}><ArrowLeft size={15}/> Volver a bienvenida</button><div className="section-heading"><div><p className="eyebrow">La carta completa</p><h2>Hecho para disfrutar<br/><em>sin prisa.</em></h2></div><button className="cart-trigger" onClick={openCart}><ShoppingBag size={17}/> Tu carrito {cartCount > 0 && <b>{cartCount}</b>}</button></div><div className="category-row">{categories.map(category => <button key={category} className={active === category ? 'category-active' : ''} onClick={() => setActive(category)}>{category}</button>)}</div><div className="menu-sections">{visibleSections.map(section => <section className="menu-category" key={section.name}><div className="category-heading"><div><p className="eyebrow">Káva selección</p><h3>{section.name}</h3></div>{section.note && <p>{section.note}</p>}</div><div className="menu-grid">{section.items.map(item => <article className="menu-card" key={`${section.name}-${item.name}`}><div className="card-top"><span className="item-icon"><Leaf size={16}/></span><span className="price">Bs {item.price}</span></div><h4>{item.name}</h4>{item.description && <p>{item.description}</p>}<button className="add-button" aria-label={`Agregar ${item.name}`} onClick={() => add(item.name)}><Plus size={16}/></button></article>)}</div></section>)}</div></section>}
 
     <section id="passport" className="passport page-shell"><div><p className="eyebrow">Káva Pasaporte</p><h2>Tu café,<br/><em>tu ritual.</em></h2><p>Descubre nuevos orígenes y deja que cada taza te lleve un poco más lejos.</p><button className="button-primary" onClick={openPassport}>Reservar pasaporte <ArrowRight size={15}/></button></div><div className="passport-video-frame"><video className="passport-video" autoPlay muted loop playsInline preload="metadata" aria-label="Experiencia Káva Pasaporte de Café"><source src="/kava-pasaporte.mp4" type="video/mp4" />Tu navegador no admite la reproducción de video.</video></div></section>
-    <section id="location" className="location page-shell">
+   <section id="location" className="location page-shell">
   <div>
     <p className="eyebrow">Encuéntranos</p>
     <h2>
@@ -115,7 +129,7 @@ export default function Page() {
     <p>Consulta nuestra ubicación y horarios directamente por WhatsApp.</p>
     
     <a 
-      href="https://maps.app.goo.gl/6Rbk58ufVPQHSprFA" 
+      href="https://maps.app.goo.gl/HCRXzfvQ1XESeyhX6" 
       target="_blank" 
       rel="noreferrer"
     >
@@ -124,7 +138,7 @@ export default function Page() {
 
     <div className="mt-6 overflow-hidden rounded-2xl shadow-md border border-black/10 w-full">
       <iframe
-        src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3711.154204536606!2d-64.73024432472907!3d-21.54082488023975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjHCsDMyJzI3LjAiUyA2NMKwNDMnMzkuNiJX!5e0!3m2!1ses!2sbo!4v1789241462718!5m2!1ses!2sbo"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3711.1970742644066!2d-64.745339!3d-21.539148099999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x940647002d345b45%3A0x85a6150a6119a17!2sKava%20Eco%20Coffee!5e0!3m2!1ses-419!2sbo!4v1789247699489!5m2!1ses-419!2sbo"
         width="100%"
         height="300"
         style={{ border: 0 }}
