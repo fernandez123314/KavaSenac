@@ -43,7 +43,8 @@ const sections: MenuSection[] = [
   { name: 'Paninis calientes', items: [['Panini clásico',24,'Pan ciabata, jamón cocido, queso mozzarella, tomates confitados y salsa especial.'],['Panini pollo',29,'Pan ciabata o masa madre, pollo a la plancha, salsa de la casa, tomates confitados, queso mozzarella y morrones confitados.'],['Panini carne',33,'Pan ciabata o integral, tiras de filete de carne, salsa de la casa, tomates confitados, morrones asados y queso cheddar.'],['Club Káva',34,'Pan brioche, pollo a la plancha, jamon, queso mozarella, huevo frito, tocino, tomate y lechuga.']].map(([name,price,description])=>({name,price,description}) as MenuItem) },
 ]
 
-const allItems = sections.flatMap(section => section.items.map((item, index) => ({...item, id: `${section.name}-${index}-${item.name}`, section: section.name})))
+sections.forEach(section => section.items.forEach((item, index) => { item.id = `${section.name}-${index}-${item.name}` }))
+const allItems = sections.flatMap(section => section.items.map(item => ({...item, section: section.name})))
 
 function BrandMark() { return <div className="brand"><div className="brand-mark"><Leaf size={25} strokeWidth={1.2}/></div><div><div className="brand-name">KÁVA</div><div className="brand-sub">ECO COFFEE</div><div className="brand-branch">Matriz - Senac </div></div></div> }
 function Botanical() { return <div className="botanical" aria-hidden="true"><Leaf className="leaf leaf-a"/><Leaf className="leaf leaf-b"/><Leaf className="leaf leaf-c"/><Leaf className="leaf leaf-d"/></div> }
@@ -63,17 +64,20 @@ export default function Page() {
   const [passportPreview, setPassportPreview] = useState(false)
   const categories = ['Todas', ...sections.map(section => section.name)]
   const visibleSections = active === 'Todas' ? sections : sections.filter(section => section.name === active)
-  const cartItems = allItems.filter(item => cart[item.id])
+  const getQuantity = (item: MenuItem) => cart[item.id] || cart[item.name] || 0
+  const cartItems = allItems.filter(item => getQuantity(item) > 0)
   const cartCount = Object.values(cart).reduce((sum, count) => sum + count, 0)
-  const total = useMemo(() => cartItems.reduce((sum, item) => sum + item.price * (cart[item.id] || 0), 0), [cartItems, cart])
-  const add = (id: string) => {
-    setCart(current => ({...current, [id]: (current[id] || 0) + 1}))
+  const total = useMemo(() => cartItems.reduce((sum, item) => sum + item.price * getQuantity(item), 0), [cartItems, cart])
+  const add = (idOrName: string) => {
+    const item = allItems.find(candidate => candidate.id === idOrName || candidate.name === idOrName)
+    if (!item) return
+    setCart(current => { const next = {...current}; const quantity = current[item.id] || current[item.name] || 0; delete next[item.name]; next[item.id] = quantity + 1; return next })
     setToast(true)
     setCartPulse(true)
     window.setTimeout(() => setToast(false), 2200)
     window.setTimeout(() => setCartPulse(false), 450)
   }
-  const remove = (id: string) => setCart(current => { const next = {...current}; if ((next[id] || 0) <= 1) delete next[id]; else next[id]--; return next })
+  const remove = (idOrName: string) => setCart(current => { const item = allItems.find(candidate => candidate.id === idOrName || candidate.name === idOrName); if (!item) return current; const next = {...current}; const key = next[item.id] ? item.id : item.name; if ((next[key] || 0) <= 1) delete next[key]; else next[key]--; return next })
   const clearCart = () => { setCart({}); setComment('') }
   const openMenu = () => { setScreen('menu'); setMenuOpen(false); setTimeout(() => document.getElementById('menu')?.scrollIntoView({behavior:'smooth'}), 0) }
   const openCart = () => { setCartOpen(true); setToast(false) }
@@ -97,7 +101,7 @@ export default function Page() {
       setScreen('welcome')
     }, 2600)
   }
-  const orderText = `Hola Káva, quiero pedir:\n${cartItems.map(item => { const quantity = cart[item.id] || 0; const subtotal = item.price * quantity; return `${quantity} x ${item.name} — Bs ${item.price} c/u — Subtotal: Bs ${subtotal}` }).join('\n')}\n\nTotal: Bs ${total}${comment ? `\nComentarios: ${comment}` : ''}`
+  const orderText = `Hola Káva, quiero pedir:\n${cartItems.map(item => { const quantity = getQuantity(item) || 0; const subtotal = item.price * quantity; return `${quantity} x ${item.name} — Bs ${item.price} c/u — Subtotal: Bs ${subtotal}` }).join('\n')}\n\nTotal: Bs ${total}${comment ? `\nComentarios: ${comment}` : ''}`
   const submitOrder = () => {
     window.open(`https://wa.me/59164593960?text=${encodeURIComponent(orderText)}`, '_blank', 'noopener,noreferrer')
     clearCart()
@@ -154,6 +158,6 @@ export default function Page() {
     <footer className="footer page-shell"><BrandMark/><p>Experiencia natural · diseño propósito · marcas que importan</p></footer>
 
     {passportOpen && <div className="overlay passport-overlay" onClick={() => !passportPreview && setPassportOpen(false)}><section className={`passport-flow ${passportPreview ? 'is-previewing' : ''}`} onClick={event => event.stopPropagation()}>{passportPreview ? <div className="passport-preview"><p className="eyebrow">Tu pasaporte está listo</p><div className="digital-passport"><div className="passport-gold-mark"><Leaf size={26}/></div><p className="passport-cover-title">COFFEE WEEK</p><div className="passport-seal"><Leaf size={28}/><span>KÁVA ECO COFFEE</span><small>• TARIJA •</small></div><p className="passport-holder">{passportName}</p></div><p className="passport-status">Preparando tu reserva en WhatsApp...</p></div> : <form className="passport-form" onSubmit={submitPassport}><button type="button" className="modal-close" aria-label="Cerrar reserva" onClick={() => setPassportOpen(false)}><X size={19}/></button><div className="form-leaf"><Leaf size={24}/></div><p className="eyebrow">Coffee Week · Tarija</p><h2>Reservar tu<br/><em>Pasaporte</em></h2><p>Completa tus datos y recibe tu pasaporte digital.</p><label htmlFor="passport-name">Nombre y Apellido</label><input id="passport-name" required value={passportName} onChange={event => setPassportName(event.target.value)} placeholder="Ingresa tu nombre completo" autoComplete="name"/><label htmlFor="passport-phone">Número de teléfono</label><input id="passport-phone" required type="tel" value={passportPhone} onChange={event => setPassportPhone(event.target.value)} placeholder="Ej. +591 71234567" autoComplete="tel"/><button className="button-primary passport-submit" type="submit">Hacer Reserva <ArrowRight size={16}/></button><small>Tu información se usará únicamente para confirmar tu reserva.</small></form>}</section></div>}
-    {cartOpen && <div className="overlay" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={event => event.stopPropagation()}><div className="drawer-header"><div><p className="eyebrow">Pedido</p><h2>Tu carrito</h2></div><button aria-label="Cerrar carrito" onClick={() => setCartOpen(false)}><X size={19}/></button></div>{cartItems.length === 0 ? <div className="empty-cart"><ShoppingBag size={30}/><p>Aún no hay nada aquí.</p><button onClick={() => {setCartOpen(false);openMenu()}}>Explorar menú</button></div> : <><div className="drawer-body"><div className="cart-lines">{cartItems.map(item => <div className="cart-line" key={item.id}><div><strong>{item.name}</strong><span>Bs {item.price} c/u · Subtotal: Bs {item.price * (cart[item.id] || 0)}</span></div><div className="quantity"><button aria-label={`Quitar uno de ${item.name}`} onClick={() => remove(item.name)}><Minus size={18}/></button><span>{cart[item.id]}</span><button aria-label={`Agregar uno de ${item.name}`} onClick={() => add(item.id)}><Plus size={18}/></button></div></div>)}</div></div><div className="drawer-footer"><div className="drawer-footer-top"><label className="comment-label" htmlFor="comment">Comentarios del pedido</label><button type="button" className="clear-cart" onClick={clearCart}>Vaciar pedido</button></div><textarea id="comment" value={comment} onChange={event => setComment(event.target.value)} placeholder="Ej. Sin azúcar, por favor." rows={3}/><div className="drawer-total"><span>Total del pedido</span><strong>Bs {total}</strong></div><button className="whatsapp-cta" onClick={submitOrder}>Pedir por WhatsApp <ArrowRight size={18}/></button></div></>}</aside></div>}
+    {cartOpen && <div className="overlay" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={event => event.stopPropagation()}><div className="drawer-header"><div><p className="eyebrow">Pedido</p><h2>Tu carrito</h2></div><button aria-label="Cerrar carrito" onClick={() => setCartOpen(false)}><X size={19}/></button></div>{cartItems.length === 0 ? <div className="empty-cart"><ShoppingBag size={30}/><p>Aún no hay nada aquí.</p><button onClick={() => {setCartOpen(false);openMenu()}}>Explorar menú</button></div> : <><div className="drawer-body"><div className="cart-lines">{cartItems.map(item => <div className="cart-line" key={item.id}><div><strong>{item.name}</strong><span>Bs {item.price} c/u · Subtotal: Bs {item.price * (getQuantity(item) || 0)}</span></div><div className="quantity"><button aria-label={`Quitar uno de ${item.name}`} onClick={() => remove(item.name)}><Minus size={18}/></button><span>{getQuantity(item)}</span><button aria-label={`Agregar uno de ${item.name}`} onClick={() => add(item.id)}><Plus size={18}/></button></div></div>)}</div></div><div className="drawer-footer"><div className="drawer-footer-top"><label className="comment-label" htmlFor="comment">Comentarios del pedido</label><button type="button" className="clear-cart" onClick={clearCart}>Vaciar pedido</button></div><textarea id="comment" value={comment} onChange={event => setComment(event.target.value)} placeholder="Ej. Sin azúcar, por favor." rows={3}/><div className="drawer-total"><span>Total del pedido</span><strong>Bs {total}</strong></div><button className="whatsapp-cta" onClick={submitOrder}>Pedir por WhatsApp <ArrowRight size={18}/></button></div></>}</aside></div>}
   </main>
 }
